@@ -1,0 +1,418 @@
+# Introduction to System Design & Architectural Drivers
+
+## What Are System Requirements?
+
+**System requirements** are formal descriptions of **what we need to build** and the constraints under which the system must operate.
+
+At a small scale, requirements are often focused on implementing individual pieces of code, such as:
+
+* A method
+* A function
+* An algorithm
+* A class
+
+However, **large-scale system requirements are fundamentally different**.
+
+Instead of asking:
+
+> "How should I implement this function?"
+
+we start asking:
+
+> "What should the entire system accomplish?"
+
+This shift in perspective is one of the foundations of **System Design and Software Architecture**.
+
+---
+
+## Big Scope & High Level of Abstraction
+
+As the scope of a system increases, we move further away from individual lines of code and start thinking about the system at a higher level of abstraction.
+
+```text
+                         ┌──────────────────────────┐
+                         │       REQUIREMENT        │
+                         │                          │
+                         │  What should the system  │
+                         │  accomplish?             │
+                         └────────────┬─────────────┘
+                                      │
+                                      ▼
+                         ┌──────────────────────────┐
+                         │       APPLICATION        │
+                         │                          │
+                         │  The system as a whole   │
+                         │  that solves the problem │
+                         └────────────┬─────────────┘
+                                      │
+                                      ▼
+                         ┌──────────────────────────┐
+                         │         LIBRARY          │
+                         │                          │
+                         │  Reusable collection of  │
+                         │  related functionality   │
+                         └────────────┬─────────────┘
+                                      │
+                         ┌────────────┼────────────┐
+                         │            │            │
+                         ▼            ▼            ▼
+                   ┌──────────┐ ┌──────────┐ ┌──────────┐
+                   │  MODULE  │ │  MODULE  │ │  MODULE  │
+                   │          │ │          │ │          │
+                   │ Feature A│ │ Feature B│ │ Feature C│
+                   └─────┬────┘ └─────┬────┘ └─────┬────┘
+                         │            │            │
+                         └────────────┼────────────┘
+                                      │
+                                      ▼
+                         ┌──────────────────────────┐
+                         │          CLASS           │
+                         │                          │
+                         │   Data + Behavior        │
+                         │   Attributes + Methods   │
+                         └────────────┬─────────────┘
+                                      │
+                                      ▼
+                         ┌──────────────────────────┐
+                         │     METHOD / FUNCTION    │
+                         │                          │
+                         │  Specific operation      │
+                         │  Actual executable logic │
+                         └──────────────────────────┘
+
+                    HIGH LEVEL OF ABSTRACTION
+                               ▲
+                               │
+                               │
+                               ▼
+                    LOW LEVEL OF ABSTRACTION
+```
+
+The further down we go, the more **concrete and implementation-oriented** our thinking becomes.
+
+| Level                 | Main Question                                   |
+| --------------------- | ----------------------------------------------- |
+| **Requirement**       | What problem are we trying to solve?            |
+| **Application**       | What should the complete system do?             |
+| **Library**           | What reusable capabilities do we need?          |
+| **Module**            | How should functionality be grouped?            |
+| **Class**             | What data and behavior belong together?         |
+| **Method / Function** | How exactly should an operation be implemented? |
+
+> **System Design operates primarily at the higher levels of abstraction**, while implementation focuses on the lower levels.
+
+---
+
+# Ambiguity
+
+One of the biggest challenges in **System Design** is **ambiguity**.
+
+Large-scale requirements are often provided by people who are:
+
+* Product managers
+* Business stakeholders
+* Customers
+* Domain experts
+* Non-technical users
+
+The person providing the requirement may understand **what they want**, but not necessarily **how it should be implemented**.
+
+For example:
+
+> "We need a system that can handle millions of users."
+
+This sounds simple, but it immediately raises many questions:
+
+```text
+How many users are active simultaneously?
+                │
+                ▼
+How much traffic is expected?
+                │
+                ▼
+What response time is acceptable?
+                │
+                ▼
+What happens when the system fails?
+                │
+                ▼
+How should the system scale?
+                │
+                ▼
+What data needs to be stored?
+```
+
+Therefore, part of system design is turning **ambiguous requirements into clear, technical requirements**.
+
+---
+
+# Importance of Gathering Requirements
+
+For a small program, we can sometimes:
+
+```text
+Build → Test → Find Problems → Fix
+```
+
+This approach becomes much more difficult for a large-scale system.
+
+Large systems are expensive and difficult to change because they may involve:
+
+* Multiple services
+* Large databases
+* External systems
+* Infrastructure
+* Multiple development teams
+* Production users
+* Complex dependencies
+
+Therefore:
+
+> **Gathering and understanding requirements upfront is critical for large-scale systems.**
+
+A mistake made early in the design process can become extremely expensive to fix later.
+
+```text
+Small Project
+
+Requirement
+     │
+     ▼
+   Build
+     │
+     ▼
+   Change
+     │
+     ▼
+   Repeat
+
+
+Large System
+
+Requirement
+     │
+     ▼
+Architecture
+     │
+     ▼
+Implementation
+     │
+     ▼
+Deployment
+     │
+     ▼
+Production
+     │
+     ▼
+Changing the architecture
+can become expensive
+```
+
+---
+
+# Features / Functional Requirements
+
+**Functional requirements** describe **what the system must do**.
+
+They define the system's expected behavior.
+
+Examples:
+
+* Users can create an account.
+* Users can log in.
+* Users can search for products.
+* Users can place an order.
+* The system can process payments.
+* The system can send notifications.
+
+A useful way to think about functional requirements is:
+
+```text
+                    ┌──────────────────────────┐
+                    │     METHOD / FUNCTION    │
+                    │                          │
+ User Actions ─────►│   Specific operation     │─────► Result
+                    │                          │
+ Events ───────────►│   Actual executable      │─────► Outcome
+                    │   logic                  │
+                    └──────────────────────────┘
+```
+
+At the application level, these individual operations combine to create **features**, and those features combine to form the complete application.
+
+```text
+Methods / Functions
+        │
+        ▼
+      Classes
+        │
+        ▼
+      Modules
+        │
+        ▼
+      Libraries
+        │
+        ▼
+    Application
+        │
+        ▼
+      System
+```
+
+---
+
+# Quality Attributes / Non-Functional Requirements
+
+Functional requirements describe:
+
+> **What the system does**
+
+Quality attributes describe:
+
+> **How well the system must do it**
+
+These are also called **non-functional requirements**.
+
+Important quality attributes include:
+
+### Scalability
+
+Can the system handle increasing numbers of users, requests, or data?
+
+```text
+1,000 users
+     ↓
+10,000 users
+     ↓
+100,000 users
+     ↓
+1,000,000 users
+```
+
+### Availability
+
+How much of the time should the system be operational and accessible?
+
+### Reliability
+
+Can the system consistently perform correctly and recover from failures?
+
+### Security
+
+Can the system protect:
+
+* User data
+* Authentication credentials
+* Financial information
+* Internal systems
+* APIs
+
+### Performance
+
+How quickly should the system respond?
+
+Examples:
+
+```text
+API Response Time < 200 ms
+Page Load Time < 2 seconds
+```
+
+---
+
+# System Constraints
+
+A system is not designed in an unlimited environment.
+
+Real-world systems have **constraints** that influence architectural decisions.
+
+### Time Constraints
+
+The system may have a strict deadline.
+
+```text
+Example:
+
+Product must launch
+within 3 months.
+```
+
+### Financial Constraints
+
+The available budget may be limited.
+
+```text
+Example:
+
+Limited budget
+      ↓
+Limited infrastructure
+      ↓
+Different architecture decisions
+```
+
+### Staffing Constraints
+
+The size and skill set of the development team can affect the architecture.
+
+```text
+Large Team
+    │
+    ├── Backend Team
+    ├── Frontend Team
+    ├── DevOps Team
+    └── Security Team
+
+
+Small Team
+    │
+    └── A few developers
+```
+
+A complex architecture may not be appropriate if the team does not have enough people or expertise to operate it.
+
+---
+
+# Summary
+
+When designing a large-scale system, we need to think beyond individual classes and functions.
+
+```text
+                    ┌─────────────────────┐
+                    │     REQUIREMENTS    │
+                    │                     │
+                    │ What should we      │
+                    │ build?              │
+                    └──────────┬──────────┘
+                               │
+                               ▼
+                    ┌─────────────────────┐
+                    │    ARCHITECTURE     │
+                    │                     │
+                    │ How should the      │
+                    │ system be structured│
+                    │ and organized?      │
+                    └──────────┬──────────┘
+                               │
+                               ▼
+                    ┌─────────────────────┐
+                    │       DESIGN        │
+                    │                     │
+                    │ How should the      │
+                    │ components work?    │
+                    └──────────┬──────────┘
+                               │
+                               ▼
+                    ┌─────────────────────┐
+                    │   IMPLEMENTATION    │
+                    │                     │
+                    │ How do we actually  │
+                    │ write the code?     │
+                    └─────────────────────┘
+```
+
+The central idea is:
+
+> **The larger the system, the higher the level of abstraction we need to think about.**
+
+System Design is therefore not simply about writing more code. It is about understanding **requirements, constraints, trade-offs, system structure, and how individual components work together to form a reliable system.**
